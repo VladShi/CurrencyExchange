@@ -10,8 +10,7 @@ public class ConnectionManager {
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {
-            System.out.println("SQLite JDBC Driver is not found");
-            e.printStackTrace();
+            System.out.println("SQLite JDBC Driver is not found. " + e.getMessage());
             throw new RuntimeException(e);
         }
     }

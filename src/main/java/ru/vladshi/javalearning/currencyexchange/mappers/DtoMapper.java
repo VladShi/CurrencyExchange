@@ -1,13 +1,13 @@
-package ru.vladshi.javalearning.currencyexchange.dto.mappers;
+package ru.vladshi.javalearning.currencyexchange.mappers;
 
 import ru.vladshi.javalearning.currencyexchange.dto.CurrencyDto;
 import ru.vladshi.javalearning.currencyexchange.models.Currency;
 
-public class Mapper {
+public class DtoMapper {
 
-    private static final Mapper INSTANCE = new Mapper();
+    private static final DtoMapper INSTANCE = new DtoMapper();
 
-    private Mapper() {
+    private DtoMapper() {
     }
 
     public CurrencyDto toDTO(Currency currency) {
@@ -26,7 +26,7 @@ public class Mapper {
                 dto.getSign());
     }
 
-    public static Mapper getInstance() {
+    public static DtoMapper getInstance() {
         return INSTANCE;
     }
 }

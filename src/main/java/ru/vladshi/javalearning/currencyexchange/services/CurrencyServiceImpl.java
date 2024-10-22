@@ -6,20 +6,14 @@ import ru.vladshi.javalearning.currencyexchange.models.Currency;
 
 import java.util.List;
 
-public class CurrencyServiceImpl implements CurrencyService {
+public enum CurrencyServiceImpl implements CurrencyService {
 
-    private static final CurrencyServiceImpl INSTANCE = new CurrencyServiceImpl();
-    private final CurrencyDao currencyDao = CurrencyDaoImpl.getInstance();
+    INSTANCE;
 
-    private CurrencyServiceImpl() {
-    }
+    private final CurrencyDao currencyDao = CurrencyDaoImpl.INSTANCE;
 
     @Override
     public List<Currency> getAllCurrencies() {
         return currencyDao.findAll();
-    }
-
-    public static CurrencyServiceImpl getInstance() {
-        return INSTANCE;
     }
 }

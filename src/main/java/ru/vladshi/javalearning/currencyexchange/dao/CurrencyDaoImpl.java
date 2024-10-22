@@ -11,12 +11,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CurrencyDaoImpl implements CurrencyDao {
+public enum CurrencyDaoImpl implements CurrencyDao {
 
-    private static final CurrencyDaoImpl INSTANCE = new CurrencyDaoImpl();
-
-    private CurrencyDaoImpl() {
-    }
+    INSTANCE;
 
     @Override
     public List<Currency> findAll() {
@@ -37,9 +34,5 @@ public class CurrencyDaoImpl implements CurrencyDao {
             throw new DatabaseException("Database is unavailable");
         }
         return currencies;
-    }
-
-    public static CurrencyDaoImpl getInstance() {
-        return INSTANCE;
     }
 }

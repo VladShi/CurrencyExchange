@@ -6,17 +6,11 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-public class ResponseMapper {
+public enum ResponseMapper {
 
-    private static final ResponseMapper INSTANCE = new ResponseMapper();
+    INSTANCE;
+
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-    private ResponseMapper() {
-    }
-
-    public static ResponseMapper getInstance() {
-        return INSTANCE;
-    }
 
     public String writeValueAsString(Object value) throws JsonProcessingException {
         return OBJECT_MAPPER.writeValueAsString(value);

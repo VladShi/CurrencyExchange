@@ -3,12 +3,9 @@ package ru.vladshi.javalearning.currencyexchange.mappers;
 import ru.vladshi.javalearning.currencyexchange.dto.CurrencyDto;
 import ru.vladshi.javalearning.currencyexchange.models.Currency;
 
-public class DtoMapper {
+public enum DtoMapper {
 
-    private static final DtoMapper INSTANCE = new DtoMapper();
-
-    private DtoMapper() {
-    }
+    INSTANCE;
 
     public CurrencyDto toDTO(Currency currency) {
         return new CurrencyDto(
@@ -24,9 +21,5 @@ public class DtoMapper {
                 dto.getCode(),
                 dto.getFullName(),
                 dto.getSign());
-    }
-
-    public static DtoMapper getInstance() {
-        return INSTANCE;
     }
 }

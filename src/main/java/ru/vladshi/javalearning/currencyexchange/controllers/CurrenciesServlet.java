@@ -16,9 +16,9 @@ import java.util.List;
 @WebServlet("/currencies")
 public class CurrenciesServlet extends HttpServlet {
 
-    private final CurrencyService currencyService = CurrencyServiceImpl.getInstance();
-    private final ResponseMapper jsonMapper = ResponseMapper.getInstance();
-    private final DtoMapper dtoMapper = DtoMapper.getInstance();
+    private final CurrencyService currencyService = CurrencyServiceImpl.INSTANCE;
+    private final ResponseMapper jsonMapper = ResponseMapper.INSTANCE;
+    private final DtoMapper dtoMapper = DtoMapper.INSTANCE;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {

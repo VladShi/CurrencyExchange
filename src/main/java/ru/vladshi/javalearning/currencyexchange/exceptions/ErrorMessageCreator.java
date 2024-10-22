@@ -5,7 +5,7 @@ import ru.vladshi.javalearning.currencyexchange.mappers.ResponseMapper;
 
 public class ErrorMessageCreator {
 
-    private static final ResponseMapper jsonMapper = ResponseMapper.getInstance();
+    private static final ResponseMapper jsonMapper = ResponseMapper.INSTANCE;
 
     public static String getAsJson(String message) throws JsonProcessingException {
         ErrorMessage errorMsg = new ErrorMessage(message);

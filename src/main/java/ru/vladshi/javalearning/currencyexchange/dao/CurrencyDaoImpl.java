@@ -1,5 +1,6 @@
 package ru.vladshi.javalearning.currencyexchange.dao;
 
+import ru.vladshi.javalearning.currencyexchange.exceptions.DatabaseException;
 import ru.vladshi.javalearning.currencyexchange.models.Currency;
 import ru.vladshi.javalearning.currencyexchange.util.ConnectionManager;
 
@@ -33,8 +34,7 @@ public class CurrencyDaoImpl implements CurrencyDao {
                 currencies.add(currency);
             }
         } catch (SQLException e) {
-            System.out.println("SQLException: " + e.getMessage());
-            throw new RuntimeException(e);
+            throw new DatabaseException("Database is unavailable");
         }
         return currencies;
     }

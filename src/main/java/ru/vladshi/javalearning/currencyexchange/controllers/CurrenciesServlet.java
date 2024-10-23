@@ -24,16 +24,12 @@ public class CurrenciesServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
         List<CurrencyDto> allCurrencies = currencyService.getAllCurrencies().stream().map(dtoMapper::toDTO).toList();
         jsonMapper.writeToResponse(response, allCurrencies);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
         CurrencyDto currencyDto = FormValidator.getValidatedCurrencyDto(request);
         int addedId = currencyService.addCurrency(dtoMapper.toModel(currencyDto));
         currencyDto.setId(addedId);

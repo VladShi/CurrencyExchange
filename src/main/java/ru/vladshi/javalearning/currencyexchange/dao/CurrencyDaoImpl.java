@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public enum CurrencyDaoImpl implements CurrencyDao {
 
@@ -28,13 +29,7 @@ public enum CurrencyDaoImpl implements CurrencyDao {
             ResultSet resultSet = statement.executeQuery(query)
         ) {
             while (resultSet.next()) {
-                Currency currency = new Currency(
-                    resultSet.getInt("id"),
-                    resultSet.getString("code"),
-                    resultSet.getString("full_name"),
-                    resultSet.getString("sign")
-                );
-                currencies.add(currency);
+                currencies.add(buildCurrency(resultSet));
             }
         } catch (SQLException e) {
             throw new DatabaseException("Database is unavailable");
@@ -66,10 +61,39 @@ public enum CurrencyDaoImpl implements CurrencyDao {
             generatedKeys.close();
         } catch (SQLException e) {
             if (e instanceof SQLiteException && e.getMessage().contains("SQLITE_CONSTRAINT_UNIQUE")) {
-                throw new DataExistsException("This currency already exists");
-            }
-            throw new RuntimeException(e);
+                throw new DataExistsException("This currency already exists");  // TODO возвращать допустим addedId = -1
+            }                                                                   // , и выкидывать ошибку уже в сервисе!!
+            throw new RuntimeException(e);                        // -> new DatabaseException("Database is unavailable")
         }
         return addedId;
+    }
+
+    @Override
+    public Optional<Currency> findByCode(String code) {
+        final String query = "SELECT * FROM currency WHERE code = ?";
+        try (
+            Connection connection = ConnectionManager.getConnection();
+            PreparedStatement statement = connection.prepareStatement(query)
+        ) {
+            statement.setString(1, code);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                Currency currency = buildCurrency(resultSet);
+                resultSet.close();
+                return Optional.of(currency);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Database is unavailable");
+        }
+        return Optional.empty();
+    }
+
+    private Currency buildCurrency(ResultSet resultSet) throws SQLException {
+        return new Currency(
+                resultSet.getInt("id"),
+                resultSet.getString("code"),
+                resultSet.getString("full_name"),
+                resultSet.getString("sign")
+        );
     }
 }

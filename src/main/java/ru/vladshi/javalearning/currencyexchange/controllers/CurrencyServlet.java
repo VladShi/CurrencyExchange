@@ -4,19 +4,18 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import ru.vladshi.javalearning.currencyexchange.dto.CurrencyDto;
 import ru.vladshi.javalearning.currencyexchange.mappers.DtoMapper;
 import ru.vladshi.javalearning.currencyexchange.mappers.ResponseJsonMapper;
 import ru.vladshi.javalearning.currencyexchange.mappers.ResponseJsonMapperImpl;
+import ru.vladshi.javalearning.currencyexchange.models.Currency;
 import ru.vladshi.javalearning.currencyexchange.services.CurrencyService;
 import ru.vladshi.javalearning.currencyexchange.services.CurrencyServiceImpl;
 import ru.vladshi.javalearning.currencyexchange.util.InputValidator;
 
 import java.io.IOException;
-import java.util.List;
 
-@WebServlet("/currencies")
-public class CurrenciesServlet extends HttpServlet {
+@WebServlet("/currency/*")
+public class CurrencyServlet extends HttpServlet {
 
     private final CurrencyService currencyService = CurrencyServiceImpl.INSTANCE;
     private final ResponseJsonMapper jsonMapper = ResponseJsonMapperImpl.INSTANCE;
@@ -24,16 +23,8 @@ public class CurrenciesServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        List<CurrencyDto> allCurrencies = currencyService.getAllCurrencies().stream().map(dtoMapper::toDTO).toList();
-        jsonMapper.writeToResponse(response, allCurrencies);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        CurrencyDto currencyDto = InputValidator.getValidatedCurrencyDto(request);
-        int addedId = currencyService.addCurrency(dtoMapper.toModel(currencyDto));
-        currencyDto.setId(addedId);
-        response.setStatus(HttpServletResponse.SC_CREATED);  // 201
-        jsonMapper.writeToResponse(response, currencyDto);
+        String currencyCode = InputValidator.getValidatedCurrencyCode(request);
+        Currency currency = currencyService.getCurrencyByCode(currencyCode);
+        jsonMapper.writeToResponse(response, dtoMapper.toDTO(currency));
     }
 }

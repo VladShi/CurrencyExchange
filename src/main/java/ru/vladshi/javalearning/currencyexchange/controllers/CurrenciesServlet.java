@@ -10,6 +10,7 @@ import ru.vladshi.javalearning.currencyexchange.mappers.ResponseJsonMapper;
 import ru.vladshi.javalearning.currencyexchange.mappers.ResponseJsonMapperImpl;
 import ru.vladshi.javalearning.currencyexchange.services.CurrencyService;
 import ru.vladshi.javalearning.currencyexchange.services.CurrencyServiceImpl;
+import ru.vladshi.javalearning.currencyexchange.util.FormValidator;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,5 +28,16 @@ public class CurrenciesServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         List<CurrencyDto> allCurrencies = currencyService.getAllCurrencies().stream().map(dtoMapper::toDTO).toList();
         jsonMapper.writeToResponse(response, allCurrencies);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        CurrencyDto currencyDto = FormValidator.getValidatedCurrencyDto(request);
+        int addedId = currencyService.addCurrency(dtoMapper.toModel(currencyDto));
+        currencyDto.setId(addedId);
+        response.setStatus(HttpServletResponse.SC_CREATED);  // 201
+        jsonMapper.writeToResponse(response, currencyDto);
     }
 }

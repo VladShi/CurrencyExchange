@@ -7,4 +7,6 @@ import java.util.List;
 public interface CurrencyDao {
 
     List<Currency> findAll();
+
+    int addCurrency(Currency currency);
 }

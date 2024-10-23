@@ -16,4 +16,9 @@ public enum CurrencyServiceImpl implements CurrencyService {
     public List<Currency> getAllCurrencies() {
         return currencyDao.findAll();
     }
+
+    @Override
+    public int addCurrency(Currency currency) {
+        return currencyDao.addCurrency(currency);
+    }
 }

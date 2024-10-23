@@ -12,7 +12,7 @@ public class ExceptionHandler {
 
     public static void handleException(HttpServletResponse servletResponse, Throwable throwable) throws IOException {
         servletResponse.setStatus(getStatusCode(throwable));
-        servletResponse.getWriter().write(ErrorMessageCreator.getAsJson(throwable.getMessage()));
+        ErrorMessageCreator.writeAsJsonToResponse(servletResponse, throwable.getMessage());
     }
 
     private static int getStatusCode(Throwable throwable) {

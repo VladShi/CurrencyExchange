@@ -6,7 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import ru.vladshi.javalearning.currencyexchange.dto.CurrencyDto;
 import ru.vladshi.javalearning.currencyexchange.mappers.DtoMapper;
-import ru.vladshi.javalearning.currencyexchange.mappers.ResponseMapper;
+import ru.vladshi.javalearning.currencyexchange.mappers.ResponseJsonMapper;
+import ru.vladshi.javalearning.currencyexchange.mappers.ResponseJsonMapperImpl;
 import ru.vladshi.javalearning.currencyexchange.services.CurrencyService;
 import ru.vladshi.javalearning.currencyexchange.services.CurrencyServiceImpl;
 
@@ -17,7 +18,7 @@ import java.util.List;
 public class CurrenciesServlet extends HttpServlet {
 
     private final CurrencyService currencyService = CurrencyServiceImpl.INSTANCE;
-    private final ResponseMapper jsonMapper = ResponseMapper.INSTANCE;
+    private final ResponseJsonMapper jsonMapper = ResponseJsonMapperImpl.INSTANCE;
     private final DtoMapper dtoMapper = DtoMapper.INSTANCE;
 
     @Override

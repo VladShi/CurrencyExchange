@@ -1,7 +1,6 @@
 package ru.vladshi.javalearning.currencyexchange.dao;
 
 import org.sqlite.SQLiteException;
-import ru.vladshi.javalearning.currencyexchange.exceptions.DataExistsException;
 import ru.vladshi.javalearning.currencyexchange.exceptions.DatabaseException;
 import ru.vladshi.javalearning.currencyexchange.models.Currency;
 import ru.vladshi.javalearning.currencyexchange.util.ConnectionManager;
@@ -14,6 +13,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 public enum CurrencyDaoImpl implements CurrencyDao {
 
@@ -38,9 +38,9 @@ public enum CurrencyDaoImpl implements CurrencyDao {
     }
 
     @Override
-    public int addCurrency(Currency currency) {
+    public OptionalInt addCurrency(Currency currency) {
         final String query = "INSERT INTO currency (code, full_name, sign) VALUES (?, ?, ?)";
-        int addedId;
+        int insertedId;
         try (
             Connection connection = ConnectionManager.getConnection();
             PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)
@@ -52,7 +52,7 @@ public enum CurrencyDaoImpl implements CurrencyDao {
 
             ResultSet generatedKeys = statement.getGeneratedKeys();
             if (generatedKeys.next()) {
-                addedId = generatedKeys.getInt(1);
+                insertedId = generatedKeys.getInt(1);
             }
             else {
                 generatedKeys.close();
@@ -61,11 +61,11 @@ public enum CurrencyDaoImpl implements CurrencyDao {
             generatedKeys.close();
         } catch (SQLException e) {
             if (e instanceof SQLiteException && e.getMessage().contains("SQLITE_CONSTRAINT_UNIQUE")) {
-                throw new DataExistsException("This currency already exists");  // TODO возвращать допустим addedId = -1
-            }                                                                   // , и выкидывать ошибку уже в сервисе!!
-            throw new RuntimeException(e);                        // -> new DatabaseException("Database is unavailable")
+                return OptionalInt.empty();
+            }
+            throw new DatabaseException("Database is unavailable");
         }
-        return addedId;
+        return OptionalInt.of(insertedId);
     }
 
     @Override

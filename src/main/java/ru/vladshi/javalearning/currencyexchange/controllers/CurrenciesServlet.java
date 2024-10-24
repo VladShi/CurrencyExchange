@@ -31,8 +31,8 @@ public class CurrenciesServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         CurrencyDto currencyDto = InputValidator.getValidatedCurrencyDto(request);
-        int addedId = currencyService.addCurrency(dtoMapper.toModel(currencyDto));
-        currencyDto.setId(addedId);
+        int insertedId = currencyService.addCurrency(dtoMapper.toModel(currencyDto));
+        currencyDto.setId(insertedId);
         response.setStatus(HttpServletResponse.SC_CREATED);  // 201
         jsonMapper.writeToResponse(response, currencyDto);
     }

@@ -2,11 +2,13 @@ package ru.vladshi.javalearning.currencyexchange.services;
 
 import ru.vladshi.javalearning.currencyexchange.dao.CurrencyDao;
 import ru.vladshi.javalearning.currencyexchange.dao.CurrencyDaoImpl;
+import ru.vladshi.javalearning.currencyexchange.exceptions.DataExistsException;
 import ru.vladshi.javalearning.currencyexchange.exceptions.DataNotFoundException;
 import ru.vladshi.javalearning.currencyexchange.models.Currency;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 public enum CurrencyServiceImpl implements CurrencyService {
 
@@ -21,7 +23,8 @@ public enum CurrencyServiceImpl implements CurrencyService {
 
     @Override
     public int addCurrency(Currency currency) {
-        return currencyDao.addCurrency(currency);
+        OptionalInt insertedId = currencyDao.addCurrency(currency);
+        return insertedId.orElseThrow(() -> new DataExistsException("This currency already exists"));
     }
 
     @Override

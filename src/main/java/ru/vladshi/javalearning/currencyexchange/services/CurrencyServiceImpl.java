@@ -18,7 +18,11 @@ public enum CurrencyServiceImpl implements CurrencyService {
 
     @Override
     public List<Currency> getAllCurrencies() {
-        return currencyDao.findAll();
+        List<Currency> currencies = currencyDao.findAll();
+        if (currencies.isEmpty()) {
+            throw new DataNotFoundException("There are no currencies yet");
+        }
+        return currencies;
     }
 
     @Override

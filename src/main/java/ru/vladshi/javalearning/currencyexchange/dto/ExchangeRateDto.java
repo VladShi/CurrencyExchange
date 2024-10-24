@@ -1,18 +1,17 @@
-package ru.vladshi.javalearning.currencyexchange.models;
+package ru.vladshi.javalearning.currencyexchange.dto;
 
 import java.math.BigDecimal;
 
-public class ExchangeRate {
-
+public class ExchangeRateDto {
     private Integer id;
-    private Currency baseCurrency;
-    private Currency targetCurrency;
+    private CurrencyDto baseCurrency;
+    private CurrencyDto targetCurrency;
     private BigDecimal rate;
 
-    public ExchangeRate() {
+    public ExchangeRateDto() {
     }
 
-    public ExchangeRate(Integer id, Currency baseCurrency, Currency targetCurrency, BigDecimal rate) {
+    public ExchangeRateDto(Integer id, CurrencyDto baseCurrency, CurrencyDto targetCurrency, BigDecimal rate) {
         this.id = id;
         this.baseCurrency = baseCurrency;
         this.targetCurrency = targetCurrency;
@@ -27,19 +26,19 @@ public class ExchangeRate {
         this.id = id;
     }
 
-    public Currency getBaseCurrency() {
+    public CurrencyDto getBaseCurrency() {
         return baseCurrency;
     }
 
-    public void setBaseCurrency(Currency baseCurrency) {
+    public void setBaseCurrency(CurrencyDto baseCurrency) {
         this.baseCurrency = baseCurrency;
     }
 
-    public Currency getTargetCurrency() {
+    public CurrencyDto getTargetCurrency() {
         return targetCurrency;
     }
 
-    public void setTargetCurrency(Currency targetCurrency) {
+    public void setTargetCurrency(CurrencyDto targetCurrency) {
         this.targetCurrency = targetCurrency;
     }
 

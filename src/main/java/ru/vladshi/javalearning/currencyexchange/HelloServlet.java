@@ -18,6 +18,7 @@ public class HelloServlet extends HttpServlet {
         out.println("<html><body>");
         out.println("<a href='/currencies'> /currencies </a>");
         out.println("<br>");
+        out.println("<a href='/exchangeRates'> /exchangeRates </a>");
         out.println("</body></html>");
     }
 }

@@ -19,12 +19,11 @@ public class CurrencyServlet extends HttpServlet {
 
     private final CurrencyService currencyService = CurrencyServiceImpl.INSTANCE;
     private final ResponseJsonMapper jsonMapper = ResponseJsonMapperImpl.INSTANCE;
-    private final DtoMapper dtoMapper = DtoMapper.INSTANCE;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String currencyCode = InputValidator.getValidatedCurrencyCode(request);
         Currency currency = currencyService.getCurrencyByCode(currencyCode);
-        jsonMapper.writeToResponse(response, dtoMapper.toDTO(currency));
+        jsonMapper.writeToResponse(response, DtoMapper.toDTO(currency));
     }
 }

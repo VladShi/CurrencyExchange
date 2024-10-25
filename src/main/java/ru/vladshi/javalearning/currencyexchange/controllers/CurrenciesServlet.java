@@ -20,18 +20,17 @@ public class CurrenciesServlet extends HttpServlet {
 
     private final CurrencyService currencyService = CurrencyServiceImpl.INSTANCE;
     private final ResponseJsonMapper jsonMapper = ResponseJsonMapperImpl.INSTANCE;
-    private final DtoMapper dtoMapper = DtoMapper.INSTANCE;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        List<CurrencyDto> allCurrencies = currencyService.getAllCurrencies().stream().map(dtoMapper::toDTO).toList();
+        List<CurrencyDto> allCurrencies = currencyService.getAllCurrencies().stream().map(DtoMapper::toDTO).toList();
         jsonMapper.writeToResponse(response, allCurrencies);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         CurrencyDto currencyDto = InputValidator.getValidatedCurrencyDto(request);
-        int insertedId = currencyService.addCurrency(dtoMapper.toModel(currencyDto));
+        int insertedId = currencyService.addCurrency(DtoMapper.toModel(currencyDto));
         currencyDto.setId(insertedId);
         response.setStatus(HttpServletResponse.SC_CREATED);  // 201
         jsonMapper.writeToResponse(response, currencyDto);

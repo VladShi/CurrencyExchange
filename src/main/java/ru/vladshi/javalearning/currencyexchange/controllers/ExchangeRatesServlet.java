@@ -19,14 +19,13 @@ public class ExchangeRatesServlet  extends HttpServlet {
 
     private final ExchangeRateService exchangeRateService = ExchangeRateServiceImpl.INSTANCE;
     private final ResponseJsonMapper jsonMapper = ResponseJsonMapperImpl.INSTANCE;
-    private final DtoMapper dtoMapper = DtoMapper.INSTANCE;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         List<ExchangeRateDto> exchangeRates =
                 exchangeRateService.getAllExchangeRates()
                 .stream()
-                .map(dtoMapper::toDTO)
+                .map(DtoMapper::toDTO)
                 .toList();
         jsonMapper.writeToResponse(response, exchangeRates);
     }

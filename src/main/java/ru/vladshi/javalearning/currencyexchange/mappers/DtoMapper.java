@@ -5,11 +5,9 @@ import ru.vladshi.javalearning.currencyexchange.dto.ExchangeRateDto;
 import ru.vladshi.javalearning.currencyexchange.models.Currency;
 import ru.vladshi.javalearning.currencyexchange.models.ExchangeRate;
 
-public enum DtoMapper {
+public class DtoMapper {
 
-    INSTANCE;
-
-    public CurrencyDto toDTO(Currency currency) {
+    public static CurrencyDto toDTO(Currency currency) {
         return new CurrencyDto(
                 currency.getId(),
                 currency.getCode(),
@@ -17,7 +15,7 @@ public enum DtoMapper {
                 currency.getSign());
     }
 
-    public Currency toModel(CurrencyDto dto) {
+    public static Currency toModel(CurrencyDto dto) {
         return new Currency(
                 dto.getId(),
                 dto.getCode(),
@@ -25,7 +23,7 @@ public enum DtoMapper {
                 dto.getSign());
     }
 
-    public ExchangeRateDto toDTO(ExchangeRate exchangeRate) {
+    public static ExchangeRateDto toDTO(ExchangeRate exchangeRate) {
         return new ExchangeRateDto(
                 exchangeRate.getId(),
                 toDTO(exchangeRate.getBaseCurrency()),

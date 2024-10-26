@@ -1,18 +1,19 @@
 package ru.vladshi.javalearning.currencyexchange.mappers;
 
 import ru.vladshi.javalearning.currencyexchange.dto.CurrencyDto;
-import ru.vladshi.javalearning.currencyexchange.dto.ExchangeRateDto;
+import ru.vladshi.javalearning.currencyexchange.dto.ExchangeRateRequestDto;
+import ru.vladshi.javalearning.currencyexchange.dto.ExchangeRateResponseDto;
 import ru.vladshi.javalearning.currencyexchange.models.Currency;
 import ru.vladshi.javalearning.currencyexchange.models.ExchangeRate;
 
 public class DtoMapper {
 
-    public static CurrencyDto toDTO(Currency currency) {
+    public static CurrencyDto toResponseDTO(Currency model) {
         return new CurrencyDto(
-                currency.getId(),
-                currency.getCode(),
-                currency.getFullName(),
-                currency.getSign());
+                model.getId(),
+                model.getCode(),
+                model.getFullName(),
+                model.getSign());
     }
 
     public static Currency toModel(CurrencyDto dto) {
@@ -23,11 +24,18 @@ public class DtoMapper {
                 dto.getSign());
     }
 
-    public static ExchangeRateDto toDTO(ExchangeRate exchangeRate) {
-        return new ExchangeRateDto(
-                exchangeRate.getId(),
-                toDTO(exchangeRate.getBaseCurrency()),
-                toDTO(exchangeRate.getTargetCurrency()),
-                exchangeRate.getRate());
+    public static ExchangeRateResponseDto toResponseDTO(ExchangeRate model) {
+        return new ExchangeRateResponseDto(
+                model.getId(),
+                toResponseDTO(model.getBaseCurrency()),
+                toResponseDTO(model.getTargetCurrency()),
+                model.getRate());
+    }
+
+    public static ExchangeRate toModel(ExchangeRateRequestDto dto) {
+        return new ExchangeRate(
+                new Currency(dto.getBaseCurrencyCode()),
+                new Currency(dto.getTargetCurrencyCode()),
+                dto.getRate());
     }
 }

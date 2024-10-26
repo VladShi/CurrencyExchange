@@ -1,9 +1,9 @@
 package ru.vladshi.javalearning.currencyexchange.mappers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 public enum ResponseJsonMapperImpl implements ResponseJsonMapper {
 
@@ -17,8 +17,7 @@ public enum ResponseJsonMapperImpl implements ResponseJsonMapper {
 //    }
 
     @Override
-    public void writeToResponse(HttpServletResponse response, Object obj) throws IOException {
-        String jsonResponse = OBJECT_MAPPER.writeValueAsString(obj);
-        response.getWriter().write(jsonResponse);
+    public void write(PrintWriter writer, Object obj) throws IOException {
+        OBJECT_MAPPER.writeValue(writer, obj);
     }
 }

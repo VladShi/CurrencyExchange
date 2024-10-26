@@ -38,7 +38,7 @@ public enum CurrencyDaoImpl implements CurrencyDao {
     }
 
     @Override
-    public OptionalInt addCurrency(Currency currency) {
+    public OptionalInt save(Currency currency) {
         final String query = "INSERT INTO currency (code, full_name, sign) VALUES (?, ?, ?)";
         int insertedId;
         try (

@@ -1,12 +1,11 @@
 package ru.vladshi.javalearning.currencyexchange.mappers;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
+import java.io.PrintWriter;
 
 public interface ResponseJsonMapper {
 
 //    String writeValueAsString(Object value) throws JsonProcessingException;
 
-    void writeToResponse(HttpServletResponse response, Object obj) throws IOException;
+    void write(PrintWriter writer, Object obj) throws IOException;
 }

@@ -23,8 +23,12 @@ public class CurrenciesServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        List<CurrencyDto> allCurrencies = currencyService.getAllCurrencies().stream().map(DtoMapper::toDTO).toList();
-        jsonMapper.writeToResponse(response, allCurrencies);
+        List<CurrencyDto> allCurrencies =
+                currencyService.getAllCurrencies()
+                .stream()
+                .map(DtoMapper::toResponseDTO)
+                .toList();
+        jsonMapper.write(response.getWriter(), allCurrencies);
     }
 
     @Override
@@ -32,7 +36,7 @@ public class CurrenciesServlet extends HttpServlet {
         CurrencyDto currencyDto = InputValidator.getValidatedCurrencyDto(request);
         int insertedId = currencyService.addCurrency(DtoMapper.toModel(currencyDto));
         currencyDto.setId(insertedId);
+        jsonMapper.write(response.getWriter(), currencyDto);
         response.setStatus(HttpServletResponse.SC_CREATED);  // 201
-        jsonMapper.writeToResponse(response, currencyDto);
     }
 }

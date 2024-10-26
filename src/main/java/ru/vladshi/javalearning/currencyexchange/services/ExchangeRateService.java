@@ -7,4 +7,6 @@ import java.util.List;
 public interface ExchangeRateService {
 
     List<ExchangeRate> getAllExchangeRates();
+
+    ExchangeRate addExchangeRate(ExchangeRate model);
 }

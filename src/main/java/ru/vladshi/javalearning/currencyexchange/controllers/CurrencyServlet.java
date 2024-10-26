@@ -24,6 +24,6 @@ public class CurrencyServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String currencyCode = InputValidator.getValidatedCurrencyCode(request);
         Currency currency = currencyService.getCurrencyByCode(currencyCode);
-        jsonMapper.writeToResponse(response, DtoMapper.toDTO(currency));
+        jsonMapper.write(response.getWriter(), DtoMapper.toResponseDTO(currency));
     }
 }

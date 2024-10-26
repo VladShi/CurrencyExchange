@@ -27,13 +27,13 @@ public enum CurrencyServiceImpl implements CurrencyService {
 
     @Override
     public int addCurrency(Currency currency) {
-        OptionalInt insertedId = currencyDao.addCurrency(currency);
+        OptionalInt insertedId = currencyDao.save(currency);
         return insertedId.orElseThrow(() -> new DataExistsException("This currency already exists"));
     }
 
     @Override
     public Currency getCurrencyByCode(String currencyCode) {
         Optional<Currency> currency = currencyDao.findByCode(currencyCode);
-        return currency.orElseThrow(() -> new DataNotFoundException("Currency not found"));
+        return currency.orElseThrow(() -> new DataNotFoundException("Currency " + currencyCode + " not found"));
     }
 }

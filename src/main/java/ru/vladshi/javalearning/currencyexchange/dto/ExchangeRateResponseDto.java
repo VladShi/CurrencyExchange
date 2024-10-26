@@ -2,16 +2,16 @@ package ru.vladshi.javalearning.currencyexchange.dto;
 
 import java.math.BigDecimal;
 
-public class ExchangeRateDto {
+public class ExchangeRateResponseDto {
     private Integer id;
     private CurrencyDto baseCurrency;
     private CurrencyDto targetCurrency;
     private BigDecimal rate;
 
-    public ExchangeRateDto() {
+    public ExchangeRateResponseDto() {
     }
 
-    public ExchangeRateDto(Integer id, CurrencyDto baseCurrency, CurrencyDto targetCurrency, BigDecimal rate) {
+    public ExchangeRateResponseDto(Integer id, CurrencyDto baseCurrency, CurrencyDto targetCurrency, BigDecimal rate) {
         this.id = id;
         this.baseCurrency = baseCurrency;
         this.targetCurrency = targetCurrency;

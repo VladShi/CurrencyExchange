@@ -1,11 +1,13 @@
 package ru.vladshi.javalearning.currencyexchange.dao;
 
+import org.sqlite.SQLiteException;
 import ru.vladshi.javalearning.currencyexchange.exceptions.DatabaseException;
 import ru.vladshi.javalearning.currencyexchange.models.Currency;
 import ru.vladshi.javalearning.currencyexchange.models.ExchangeRate;
 import ru.vladshi.javalearning.currencyexchange.util.ConnectionManager;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -13,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 
 public enum ExchangeRateDaoImpl implements ExchangeRateDao {
 
@@ -50,6 +53,37 @@ public enum ExchangeRateDaoImpl implements ExchangeRateDao {
             throw new DatabaseException("Database is unavailable");
         }
         return exchangeRates;
+    }
+
+    @Override
+    public OptionalInt save(ExchangeRate exchangeRate) {
+        final String query = "INSERT INTO exchange_rate (base_currency_id, target_currency_id, rate) VALUES (?, ?, ?)";
+        int insertedId;
+        try (
+            Connection connection = ConnectionManager.getConnection();
+            PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)
+        ){
+            statement.setInt(1, exchangeRate.getBaseCurrency().getId());
+            statement.setInt(2, exchangeRate.getTargetCurrency().getId());
+            statement.setBigDecimal(3, exchangeRate.getRate());
+            statement.executeUpdate();
+
+            ResultSet generatedKeys = statement.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                insertedId = generatedKeys.getInt(1);
+            }
+            else {
+                generatedKeys.close();
+                throw new DatabaseException("Adding new exchange rate failed, no ID obtained.");
+            }
+            generatedKeys.close();
+        } catch (SQLException e) {
+            if (e instanceof SQLiteException && e.getMessage().contains("SQLITE_CONSTRAINT_UNIQUE")) {
+                return OptionalInt.empty();
+            }
+            throw new DatabaseException("Database is unavailable");
+        }
+        return OptionalInt.of(insertedId);
     }
 
     private ExchangeRate buildExchangeRate(ResultSet resultSet) throws SQLException {

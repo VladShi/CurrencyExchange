@@ -29,6 +29,18 @@ public class InputValidator {
         return currencyCode.toUpperCase();
     }
 
+    public static String[] getValidatedCodePair(HttpServletRequest request) {
+        String path = request.getPathInfo();
+        if (path == null || path.length() != 7) {
+            throw new InvalidDataException("Pair of currency codes is incorrect");
+        }
+        String baseCurrencyCode = path.substring(1, 4);
+        checkCode(baseCurrencyCode);
+        String targetCurrencyCode = path.substring(4);
+        checkCode(targetCurrencyCode);
+        return new String[]{baseCurrencyCode.toUpperCase(), targetCurrencyCode.toUpperCase()};
+    }
+
     public static ExchangeRateRequestDto getValidatedExchangeRateRequestDto(HttpServletRequest request) {
         String baseCurrencyCode = request.getParameter("baseCurrencyCode");
         checkCode(baseCurrencyCode, "Base currency code");

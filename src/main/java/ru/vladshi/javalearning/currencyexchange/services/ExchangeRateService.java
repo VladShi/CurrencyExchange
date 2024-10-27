@@ -9,4 +9,6 @@ public interface ExchangeRateService {
     List<ExchangeRate> getAllExchangeRates();
 
     ExchangeRate addExchangeRate(ExchangeRate model);
+
+    ExchangeRate getExchangeRateByCodePair(String baseCurrencyCode, String targetCurrencyCode);
 }

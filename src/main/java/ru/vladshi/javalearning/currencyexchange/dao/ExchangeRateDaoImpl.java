@@ -11,11 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.OptionalInt;
+import java.util.*;
 
 public enum ExchangeRateDaoImpl implements ExchangeRateDao {
 
@@ -24,19 +20,19 @@ public enum ExchangeRateDaoImpl implements ExchangeRateDao {
     @Override
     public List<ExchangeRate> findAll() {
         final String query = """
-                                SELECT er_t.id,
-                                       base_t.id          as base_id,
-                                       base_t.code        as base_code,
-                                       base_t.full_name   as base_full_name,
-                                       base_t.sign        as base_sign,
-                                       target_t.id        as target_id,
-                                       target_t.code      as target_code,
-                                       target_t.full_name as target_full_name,
-                                       target_t.sign      as target_sign,
-                                       er_t.rate
-                                FROM exchange_rate er_t
-                                    JOIN currency base_t ON base_t.id = er_t.base_currency_id
-                                    JOIN currency target_t ON target_t.id = er_t.target_currency_id;
+                                SELECT er.id        AS id,
+                                       bc.id        AS base_id,
+                                       bc.code      AS base_code,
+                                       bc.full_name AS base_full_name,
+                                       bc.sign      AS base_sign,
+                                       tc.id        AS target_id,
+                                       tc.code      AS target_code,
+                                       tc.full_name AS target_full_name,
+                                       tc.sign      AS target_sign,
+                                       er.rate      AS rate
+                                FROM exchange_rate AS er
+                                         JOIN currency AS bc ON bc.id = er.base_currency_id
+                                         JOIN currency AS tc ON tc.id = er.target_currency_id;
         """;
         List<ExchangeRate> exchangeRates = new ArrayList<>();
         try (
@@ -44,6 +40,8 @@ public enum ExchangeRateDaoImpl implements ExchangeRateDao {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query)
         ) {
+            // TODO зарефакторить buildExchangeRate версию с двумя методами, так что бы Мар создавался внутри и
+            //  переименовать во что-то типа fillExchangeRatesListFromResultSet...
             Map<Integer, Currency> tempCurrenciesHolder = new HashMap<>();
             while (resultSet.next()) {
                 exchangeRates.add(buildExchangeRate(resultSet, tempCurrenciesHolder));
@@ -84,6 +82,43 @@ public enum ExchangeRateDaoImpl implements ExchangeRateDao {
             throw new DatabaseException("Database is unavailable");
         }
         return OptionalInt.of(insertedId);
+    }
+
+    @Override
+    public Optional<ExchangeRate> findByCodePair(String baseCurrencyCode, String targetCurrencyCode) {
+        final String query = """
+                                SELECT er.id        AS id,
+                                       bc.id        AS base_id,
+                                       bc.code      AS base_code,
+                                       bc.full_name AS base_full_name,
+                                       bc.sign      AS base_sign,
+                                       tc.id        AS target_id,
+                                       tc.code      AS target_code,
+                                       tc.full_name AS target_full_name,
+                                       tc.sign      AS target_sign,
+                                       er.rate      AS rate
+                                FROM exchange_rate AS er
+                                    JOIN currency AS bc ON er.base_currency_id = bc.id
+                                    JOIN currency AS tc ON er.target_currency_id = tc.id
+                                WHERE base_code = ? AND target_code = ?;
+        """;
+        try (
+            Connection connection = ConnectionManager.getConnection();
+            PreparedStatement statement = connection.prepareStatement(query)
+        ) {
+            statement.setString(1, baseCurrencyCode);
+            statement.setString(2, targetCurrencyCode);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                ExchangeRate exchangeRate = buildExchangeRate(resultSet);
+                resultSet.close();
+                return Optional.of(exchangeRate);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Database is unavailable");
+        }
+        return Optional.empty();
     }
 
     private ExchangeRate buildExchangeRate(ResultSet resultSet) throws SQLException {

@@ -8,6 +8,7 @@ import ru.vladshi.javalearning.currencyexchange.models.Currency;
 import ru.vladshi.javalearning.currencyexchange.models.ExchangeRate;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.OptionalInt;
 
 public enum ExchangeRateServiceImpl implements ExchangeRateService {
@@ -39,5 +40,12 @@ public enum ExchangeRateServiceImpl implements ExchangeRateService {
         OptionalInt insertedId = exchangeRateDao.save(exchangeRate);
         exchangeRate.setId(insertedId.orElseThrow(() -> new DataExistsException("This exchange rate already exists")));
         return exchangeRate;
+    }
+
+    @Override
+    public ExchangeRate getExchangeRateByCodePair(String baseCurrencyCode, String targetCurrencyCode) {
+        Optional<ExchangeRate> exchangeRate = exchangeRateDao.findByCodePair(baseCurrencyCode, targetCurrencyCode);
+        return exchangeRate.orElseThrow(() -> new DataNotFoundException(
+                "Exchange rate %s to %s not found".formatted(baseCurrencyCode, targetCurrencyCode)));
     }
 }

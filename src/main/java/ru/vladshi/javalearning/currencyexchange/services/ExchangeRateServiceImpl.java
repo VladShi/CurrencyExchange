@@ -7,6 +7,7 @@ import ru.vladshi.javalearning.currencyexchange.exceptions.DataNotFoundException
 import ru.vladshi.javalearning.currencyexchange.models.Currency;
 import ru.vladshi.javalearning.currencyexchange.models.ExchangeRate;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -47,5 +48,15 @@ public enum ExchangeRateServiceImpl implements ExchangeRateService {
         Optional<ExchangeRate> exchangeRate = exchangeRateDao.findByCodePair(baseCurrencyCode, targetCurrencyCode);
         return exchangeRate.orElseThrow(() -> new DataNotFoundException(
                 "Exchange rate %s to %s not found".formatted(baseCurrencyCode, targetCurrencyCode)));
+    }
+
+    @Override
+    public ExchangeRate updateExchangeRateByCodePair(String baseCurrencyCode,
+                                                     String targetCurrencyCode,
+                                                     BigDecimal rate) {
+        ExchangeRate exchangeRate = getExchangeRateByCodePair(baseCurrencyCode, targetCurrencyCode);
+        exchangeRate.setRate(rate);
+        exchangeRateDao.update(exchangeRate);
+        return exchangeRate;
     }
 }

@@ -14,6 +14,7 @@ import ru.vladshi.javalearning.currencyexchange.services.ExchangeRateServiceImpl
 import ru.vladshi.javalearning.currencyexchange.util.InputValidator;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 @WebServlet("/exchangeRate/*")
 public class ExchangeRateServlet extends HttpServlet {
@@ -22,9 +23,10 @@ public class ExchangeRateServlet extends HttpServlet {
     private final ResponseJsonMapper jsonMapper = ResponseJsonMapperImpl.INSTANCE;
 
     @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void service(HttpServletRequest request, HttpServletResponse response)
+                                                      throws ServletException, IOException {
         if (request.getMethod().equalsIgnoreCase("PATCH")) {
-            // doPatch(request, response);  // TODO
+            doPatch(request, response);
         } else {
             super.service(request, response);
         }
@@ -36,6 +38,16 @@ public class ExchangeRateServlet extends HttpServlet {
         String baseCurrencyCode = codePair[0];
         String targetCurrencyCode = codePair[1];
         ExchangeRate exchangeRate = exchangeRateService.getExchangeRateByCodePair(baseCurrencyCode, targetCurrencyCode);
+        jsonMapper.write(response.getWriter(), DtoMapper.toResponseDTO(exchangeRate));
+    }
+
+    private void doPatch(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String[] codePair = InputValidator.getValidatedCodePair(request);
+        String baseCurrencyCode = codePair[0];
+        String targetCurrencyCode = codePair[1];
+        BigDecimal rate = InputValidator.getValidatedRateFromPatchRequest(request);
+        ExchangeRate exchangeRate =
+                exchangeRateService.updateExchangeRateByCodePair(baseCurrencyCode, targetCurrencyCode, rate);
         jsonMapper.write(response.getWriter(), DtoMapper.toResponseDTO(exchangeRate));
     }
 }

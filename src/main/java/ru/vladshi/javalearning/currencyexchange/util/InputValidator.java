@@ -5,6 +5,7 @@ import ru.vladshi.javalearning.currencyexchange.dto.CurrencyDto;
 import ru.vladshi.javalearning.currencyexchange.dto.ExchangeRateRequestDto;
 import ru.vladshi.javalearning.currencyexchange.exceptions.InvalidDataException;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 
 public class InputValidator {
@@ -49,6 +50,23 @@ public class InputValidator {
         String rateAsString = request.getParameter("rate");
         BigDecimal rate = checkAndConvertRate(rateAsString);
         return new ExchangeRateRequestDto(baseCurrencyCode, targetCurrencyCode, rate);
+    }
+
+    public static BigDecimal getValidatedRateFromPatchRequest(HttpServletRequest request) throws IOException {
+        String rateAsString = "";
+        String requestBody = request.getReader().readLine();
+        if (requestBody != null && !requestBody.isBlank()) {
+            String[] parameters = requestBody.split("&");
+            for (String parameter : parameters) {
+                String[] keyValue = parameter.split("=");
+                String key = keyValue[0];
+                String value = keyValue[1];
+                if (key.equals("rate")) {
+                    rateAsString = value;
+                }
+            }
+        }
+        return checkAndConvertRate(rateAsString);
     }
 
     private static void checkCode(String code) {

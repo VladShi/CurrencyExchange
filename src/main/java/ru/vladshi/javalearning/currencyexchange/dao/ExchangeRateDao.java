@@ -13,4 +13,6 @@ public interface ExchangeRateDao {
     OptionalInt save(ExchangeRate exchangeRate);
 
     Optional<ExchangeRate> findByCodePair(String baseCurrencyCode, String targetCurrencyCode);
+
+    void update(ExchangeRate exchangeRate);
 }

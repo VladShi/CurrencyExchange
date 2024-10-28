@@ -115,6 +115,24 @@ public enum ExchangeRateDaoImpl implements ExchangeRateDao {
         return Optional.empty();
     }
 
+    @Override
+    public void update(ExchangeRate exchangeRate) {
+        final String query = "UPDATE exchange_rate SET rate = ? WHERE id = ?";
+        try (
+            Connection connection = ConnectionManager.getConnection();
+            PreparedStatement statement = connection.prepareStatement(query)
+        ) {
+            statement.setBigDecimal(1, exchangeRate.getRate());
+            statement.setInt(2, exchangeRate.getId());
+            int affectedRows = statement.executeUpdate();
+            if (affectedRows == 0) {
+                throw new DatabaseException("Exchange rate update failed, no rows affected.");
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Database is unavailable");
+        }
+    }
+
     private ExchangeRate buildExchangeRate(ResultSet resultSet) throws SQLException {
         return new ExchangeRate(
                 resultSet.getInt("id"),

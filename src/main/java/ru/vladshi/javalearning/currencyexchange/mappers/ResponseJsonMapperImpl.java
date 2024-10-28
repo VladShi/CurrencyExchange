@@ -11,11 +11,6 @@ public enum ResponseJsonMapperImpl implements ResponseJsonMapper {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-//    @Override
-//    public String writeValueAsString(Object value) throws JsonProcessingException {
-//        return OBJECT_MAPPER.writeValueAsString(value);
-//    }
-
     @Override
     public void write(PrintWriter writer, Object obj) throws IOException {
         OBJECT_MAPPER.writeValue(writer, obj);

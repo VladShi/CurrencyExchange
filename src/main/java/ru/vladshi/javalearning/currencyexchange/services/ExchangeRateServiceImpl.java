@@ -12,12 +12,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 
+import static java.math.RoundingMode.HALF_DOWN;
+
 public enum ExchangeRateServiceImpl implements ExchangeRateService {
 
     INSTANCE;
 
     private final ExchangeRateDao exchangeRateDao = ExchangeRateDaoImpl.INSTANCE;
     private final CurrencyService currencyService = CurrencyServiceImpl.INSTANCE;
+    private static final String CROSS_RATE_CURRENCY_CODE = "USD";
 
     @Override
     public List<ExchangeRate> getAllExchangeRates() {
@@ -58,5 +61,64 @@ public enum ExchangeRateServiceImpl implements ExchangeRateService {
         exchangeRate.setRate(rate);
         exchangeRateDao.update(exchangeRate);
         return exchangeRate;
+    }
+
+    @Override
+    public BigDecimal getConvertedAmount(BigDecimal rate, BigDecimal amount) {
+        return rate.multiply(amount).setScale(2, HALF_DOWN);
+    }
+
+    @Override
+    public ExchangeRate findSuitableExchangeRate(String baseCurrencyCode, String targetCurrencyCode) {
+        String base = baseCurrencyCode;
+        String target = targetCurrencyCode;
+
+        Optional<ExchangeRate> exchangeRate = findByDirectExchange(base, target);
+        if (exchangeRate.isEmpty()) {
+            exchangeRate = findByReverseExchange(base, target);
+        }
+        if (exchangeRate.isEmpty()) {
+            exchangeRate = findByCrossRate(base, target);
+        }
+        return exchangeRate.orElseThrow(() -> new DataNotFoundException(
+                "Exchange rate %s to %s not found".formatted(baseCurrencyCode, targetCurrencyCode)));
+    }
+
+    private Optional<ExchangeRate> findByDirectExchange(String baseCurrencyCode, String targetCurrencyCode) {
+        return exchangeRateDao.findByCodePair(baseCurrencyCode, targetCurrencyCode);
+    }
+
+    private Optional<ExchangeRate> findByReverseExchange(String baseCurrencyCode, String targetCurrencyCode) {
+        Optional<ExchangeRate> exchangeRate = exchangeRateDao.findByCodePair(targetCurrencyCode, baseCurrencyCode);
+        if (exchangeRate.isPresent()) {
+            exchangeRate = reverseExchangeRate(exchangeRate.get());
+        }
+        return exchangeRate;
+    }
+
+    private Optional<ExchangeRate> reverseExchangeRate(ExchangeRate exchangeRate) {
+        ExchangeRate reversedExchangeRate = new ExchangeRate();
+        reversedExchangeRate.setBaseCurrency(exchangeRate.getTargetCurrency());
+        reversedExchangeRate.setTargetCurrency(exchangeRate.getBaseCurrency());
+        BigDecimal reversedRate = BigDecimal.valueOf(1L).divide(exchangeRate.getRate(),6, HALF_DOWN);
+        reversedExchangeRate.setRate(reversedRate);
+        return Optional.of(reversedExchangeRate);
+    }
+
+    private Optional<ExchangeRate> findByCrossRate(String baseCurrencyCode, String targetCurrencyCode) {
+        Optional<ExchangeRate> baseCrossRate = exchangeRateDao.findByCodePair(
+                                                                        CROSS_RATE_CURRENCY_CODE, baseCurrencyCode);
+        Optional<ExchangeRate> targetCrossRate = exchangeRateDao.findByCodePair(
+                                                                        CROSS_RATE_CURRENCY_CODE, targetCurrencyCode);
+        if (baseCrossRate.isEmpty() || targetCrossRate.isEmpty()) {
+            return Optional.empty();
+        }
+        BigDecimal resultRate = targetCrossRate.get().getRate()
+                                    .divide(baseCrossRate.get().getRate(), 6, HALF_DOWN);
+        return Optional.of(new ExchangeRate(
+                baseCrossRate.get().getTargetCurrency(),
+                targetCrossRate.get().getTargetCurrency(),
+                resultRate
+        ));
     }
 }

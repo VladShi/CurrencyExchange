@@ -3,6 +3,7 @@ package ru.vladshi.javalearning.currencyexchange.util;
 import jakarta.servlet.http.HttpServletRequest;
 import ru.vladshi.javalearning.currencyexchange.dto.CurrencyDto;
 import ru.vladshi.javalearning.currencyexchange.dto.ExchangeRateRequestDto;
+import ru.vladshi.javalearning.currencyexchange.dto.ExchangeRequestDto;
 import ru.vladshi.javalearning.currencyexchange.exceptions.InvalidDataException;
 
 import java.io.IOException;
@@ -48,8 +49,8 @@ public class InputValidator {
         String targetCurrencyCode = request.getParameter("targetCurrencyCode");
         checkCode(targetCurrencyCode,  "Target currency code");
         String rateAsString = request.getParameter("rate");
-        BigDecimal rate = checkAndConvertRate(rateAsString);
-        return new ExchangeRateRequestDto(baseCurrencyCode, targetCurrencyCode, rate);
+        BigDecimal rate = checkAndGetAsBigDecimal(rateAsString, "Rate");
+        return new ExchangeRateRequestDto(baseCurrencyCode.toUpperCase(), targetCurrencyCode.toUpperCase(), rate);
     }
 
     public static BigDecimal getValidatedRateFromPatchRequest(HttpServletRequest request) throws IOException {
@@ -66,7 +67,17 @@ public class InputValidator {
                 }
             }
         }
-        return checkAndConvertRate(rateAsString);
+        return checkAndGetAsBigDecimal(rateAsString, "Rate");
+    }
+
+    public static ExchangeRequestDto getValidatedExchangeRequestDto(HttpServletRequest request) {
+        String baseCurrencyCode = request.getParameter("from");
+        checkCode(baseCurrencyCode);
+        String targetCurrencyCode = request.getParameter("to");
+        checkCode(targetCurrencyCode);
+        String amountAsString = request.getParameter("amount");
+        BigDecimal amount = checkAndGetAsBigDecimal(amountAsString, "Amount");
+        return new ExchangeRequestDto(baseCurrencyCode, targetCurrencyCode, amount);
     }
 
     private static void checkCode(String code) {
@@ -91,15 +102,15 @@ public class InputValidator {
         }
     }
 
-    private static BigDecimal checkAndConvertRate(String rate) {
+    private static BigDecimal checkAndGetAsBigDecimal(String parameterValue, String parameterName) {
         BigDecimal rateAsBigDecimal;
-        if (rate == null || rate.isBlank()) {
-            throw new InvalidDataException("Rate field is required");
+        if (parameterValue == null || parameterValue.isBlank()) {
+            throw new InvalidDataException(parameterName + " field is required");
         }
         try {
-            rateAsBigDecimal = new BigDecimal(rate);
+            rateAsBigDecimal = new BigDecimal(parameterValue);
         } catch (NumberFormatException e) {
-            throw new InvalidDataException("Rate is incorrect");
+            throw new InvalidDataException(parameterName + " is incorrect");
         }
         return rateAsBigDecimal;
     }

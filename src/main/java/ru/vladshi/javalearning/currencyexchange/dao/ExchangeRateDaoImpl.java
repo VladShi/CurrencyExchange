@@ -34,19 +34,13 @@ public enum ExchangeRateDaoImpl implements ExchangeRateDao {
                                          JOIN currency AS bc ON bc.id = er.base_currency_id
                                          JOIN currency AS tc ON tc.id = er.target_currency_id;
         """;
-        List<ExchangeRate> exchangeRates = new ArrayList<>();
+        List<ExchangeRate> exchangeRates;
         try (
             Connection connection = ConnectionManager.getConnection();
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query)
         ) {
-            // TODO зарефакторить buildExchangeRate версию с двумя методами, так что бы Мар создавался внутри и
-            //  переименовать во что-то типа fillExchangeRatesListFromResultSet...
-            Map<Integer, Currency> tempCurrenciesHolder = new HashMap<>();
-            while (resultSet.next()) {
-                exchangeRates.add(buildExchangeRate(resultSet, tempCurrenciesHolder));
-            }
-            tempCurrenciesHolder.clear();
+            exchangeRates = buildExchangeRatesList(resultSet);
         } catch (SQLException e) {
             throw new DatabaseException("Database is unavailable");
         }
@@ -129,31 +123,36 @@ public enum ExchangeRateDaoImpl implements ExchangeRateDao {
                 resultSet.getBigDecimal("rate"));
     }
 
-    private ExchangeRate buildExchangeRate(ResultSet resultSet, Map<Integer, Currency> tempCurrenciesHolder)
+    private List<ExchangeRate> buildExchangeRatesList(ResultSet resultSet)
             throws SQLException {
-        // tempCurrenciesHolder -  is needed to avoid creating and keeping in memory too many Currency instances that
-        // will have identical field values.
-        Integer baseId = resultSet.getInt("base_id");
-        Integer targetId = resultSet.getInt("target_id");
-        Currency baseCurrency;
-        if (tempCurrenciesHolder.containsKey(baseId)) {
-            baseCurrency = tempCurrenciesHolder.get(baseId);
-        } else {
-            baseCurrency = buildBaseCurrency(resultSet);
-            tempCurrenciesHolder.put(baseId, baseCurrency);
+        List<ExchangeRate> exchangeRates = new ArrayList<>();
+        Map<Integer, Currency> tempCurrenciesHolder = new HashMap<>();
+        // tempCurrenciesHolder -  is needed to avoid creating and keeping in memory too many Currency instances with
+        // identical field values. Since the same currency is involved in many exchange rates.
+        while (resultSet.next()) {
+            Integer baseId = resultSet.getInt("base_id");
+            Integer targetId = resultSet.getInt("target_id");
+            Currency baseCurrency;
+            if (tempCurrenciesHolder.containsKey(baseId)) {
+                baseCurrency = tempCurrenciesHolder.get(baseId);
+            } else {
+                baseCurrency = buildBaseCurrency(resultSet);
+                tempCurrenciesHolder.put(baseId, baseCurrency);
+            }
+            Currency targetCurrency;
+            if (tempCurrenciesHolder.containsKey(targetId)) {
+                targetCurrency = tempCurrenciesHolder.get(targetId);
+            } else {
+                targetCurrency = buildTargetCurrency(resultSet);
+                tempCurrenciesHolder.put(targetId, targetCurrency);
+            }
+            exchangeRates.add(new ExchangeRate(
+                    resultSet.getInt("id"),
+                    baseCurrency,
+                    targetCurrency,
+                    resultSet.getBigDecimal("rate")));
         }
-        Currency targetCurrency;
-        if (tempCurrenciesHolder.containsKey(targetId)) {
-            targetCurrency = tempCurrenciesHolder.get(targetId);
-        } else {
-            targetCurrency = buildTargetCurrency(resultSet);
-            tempCurrenciesHolder.put(targetId, targetCurrency);
-        }
-        return new ExchangeRate(
-                resultSet.getInt("id"),
-                baseCurrency,
-                targetCurrency,
-                resultSet.getBigDecimal("rate"));
+        return exchangeRates;
     }
 
     private static Currency buildBaseCurrency(ResultSet resultSet) throws SQLException {

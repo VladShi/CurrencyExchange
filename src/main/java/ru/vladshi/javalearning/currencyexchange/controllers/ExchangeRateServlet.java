@@ -1,5 +1,6 @@
 package ru.vladshi.javalearning.currencyexchange.controllers;
 
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +20,15 @@ public class ExchangeRateServlet extends HttpServlet {
 
     private final ExchangeRateService exchangeRateService = ExchangeRateServiceImpl.INSTANCE;
     private final ResponseJsonMapper jsonMapper = ResponseJsonMapperImpl.INSTANCE;
+
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (request.getMethod().equalsIgnoreCase("PATCH")) {
+            // doPatch(request, response);  // TODO
+        } else {
+            super.service(request, response);
+        }
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {

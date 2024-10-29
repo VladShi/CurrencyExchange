@@ -85,7 +85,7 @@ public class InputValidator {
     }
 
     private static void checkCode(String code, String parameterName) {
-        if (code == null || !code.matches("^[a-zA-Z]{3}$")) {
+        if (code == null || !isThreeLatinLetters(code)) {
             throw new InvalidDataException(parameterName + " is incorrect");
         }
     }
@@ -107,11 +107,19 @@ public class InputValidator {
         if (parameterValue == null || parameterValue.isBlank()) {
             throw new InvalidDataException(parameterName + " field is required");
         }
-        try {
-            rateAsBigDecimal = new BigDecimal(parameterValue);
-        } catch (NumberFormatException e) {
+        parameterValue = parameterValue.replace(',', '.');
+        if (parameterValue.length() > 20 || !isPositiveNumericWithSixDecimalMaximum(parameterValue)) {
             throw new InvalidDataException(parameterName + " is incorrect");
         }
+        rateAsBigDecimal = new BigDecimal(parameterValue);
         return rateAsBigDecimal;
+    }
+
+    private static boolean isPositiveNumericWithSixDecimalMaximum(String input) {
+        return input.matches("^[0-9]*([.][0-9]{0,6})?$");
+    }
+
+    private static boolean isThreeLatinLetters (String input) {
+        return input.matches("^[a-zA-Z]{3}$");
     }
 }

@@ -1,0 +1,268 @@
+{
+	"info": {
+		"_postman_id": "175c139c-6fb3-4d8a-8eec-26a565335ca0",
+		"name": "CurrencyExchange.Remote",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39373973"
+	},
+	"item": [
+		{
+			"name": "/currency/USD",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://82.146.33.42:8080/currency-exchange/currency/USD",
+					"protocol": "http",
+					"host": [
+						"82",
+						"146",
+						"33",
+						"42"
+					],
+					"port": "8080",
+					"path": [
+						"currency-exchange",
+						"currency",
+						"USD"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/currencies",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://82.146.33.42:8080/currency-exchange/currencies",
+					"protocol": "http",
+					"host": [
+						"82",
+						"146",
+						"33",
+						"42"
+					],
+					"port": "8080",
+					"path": [
+						"currency-exchange",
+						"currencies"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/currencies",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "name",
+							"value": "United States dollar",
+							"type": "text"
+						},
+						{
+							"key": "code",
+							"value": "USD",
+							"type": "text"
+						},
+						{
+							"key": "sign",
+							"value": "$",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://82.146.33.42:8080/currency-exchange/currencies",
+					"protocol": "http",
+					"host": [
+						"82",
+						"146",
+						"33",
+						"42"
+					],
+					"port": "8080",
+					"path": [
+						"currency-exchange",
+						"currencies"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/exchangeRates",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://82.146.33.42:8080/currency-exchange/exchangeRates",
+					"protocol": "http",
+					"host": [
+						"82",
+						"146",
+						"33",
+						"42"
+					],
+					"port": "8080",
+					"path": [
+						"currency-exchange",
+						"exchangeRates"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/exchangeRate/USDRUB",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://82.146.33.42:8080/currency-exchange/exchangeRate/USDRUB",
+					"protocol": "http",
+					"host": [
+						"82",
+						"146",
+						"33",
+						"42"
+					],
+					"port": "8080",
+					"path": [
+						"currency-exchange",
+						"exchangeRate",
+						"USDRUB"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/exchangeRates",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "baseCurrencyCode",
+							"value": "USD",
+							"type": "default"
+						},
+						{
+							"key": "targetCurrencyCode",
+							"value": "RUB",
+							"type": "default"
+						},
+						{
+							"key": "rate",
+							"value": "97",
+							"type": "default"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://82.146.33.42:8080/currency-exchange/exchangeRates",
+					"protocol": "http",
+					"host": [
+						"82",
+						"146",
+						"33",
+						"42"
+					],
+					"port": "8080",
+					"path": [
+						"currency-exchange",
+						"exchangeRates"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/exchangeRate/USDRUB",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "rate",
+							"value": "97",
+							"type": "default"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://82.146.33.42:8080/currency-exchange/exchangeRate/USDRUB",
+					"protocol": "http",
+					"host": [
+						"82",
+						"146",
+						"33",
+						"42"
+					],
+					"port": "8080",
+					"path": [
+						"currency-exchange",
+						"exchangeRate",
+						"USDRUB"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/exchange?from=USD&to=RUB&amount=10",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": []
+				},
+				"url": {
+					"raw": "http://82.146.33.42:8080/currency-exchange/exchange?from=USD&to=RUB&amount=10",
+					"protocol": "http",
+					"host": [
+						"82",
+						"146",
+						"33",
+						"42"
+					],
+					"port": "8080",
+					"path": [
+						"currency-exchange",
+						"exchange"
+					],
+					"query": [
+						{
+							"key": "from",
+							"value": "USD"
+						},
+						{
+							"key": "to",
+							"value": "RUB"
+						},
+						{
+							"key": "amount",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

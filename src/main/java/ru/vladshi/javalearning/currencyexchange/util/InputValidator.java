@@ -112,6 +112,9 @@ public class InputValidator {
             throw new InvalidDataException(parameterName + " is incorrect");
         }
         rateAsBigDecimal = new BigDecimal(parameterValue);
+        if (rateAsBigDecimal.compareTo(BigDecimal.ZERO) == 0) {
+            throw new InvalidDataException(parameterName + " must not be equal to zero");
+        }
         return rateAsBigDecimal;
     }
 
